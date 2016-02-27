@@ -3,6 +3,11 @@ mamercad.gitlab-ce
 
 Stands up Gitlab CE on RHEL/CentOS
 
+Warnings
+--------
+
+The Gitlab CE packages aren't signed, sigh
+
 Requirements
 ------------
 
