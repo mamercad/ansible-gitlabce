@@ -1,0 +1,42 @@
+---
+# tasks file for ansible-gitlabce
+
+# following this: https://about.gitlab.com/downloads/#centos7
+
+- name: install prerequisites
+  yum: name={{ item }} state=present
+  with_items:
+    - curl
+    - policycoreutils
+    - openssh-server
+    - openssh-clients
+
+- name: start and enable sshd
+  service: name=sshd state=started enabled=yes
+
+- name: install postfix
+  yum: name=postfix state=present
+
+- name: start and enable postfix
+  service: name=postfix state=started enabled=yes
+
+- name: allow http through firewalld
+  firewalld: zone=public service=http permanent=true state=enabled
+
+- name: start and enable firewalld
+  service: name=firewalld state=started enabled=yes
+
+# - name: install gitlab gpg key
+#   rpm_key: key=https://packages.gitlab.com/gpg.key state=present
+
+- name: deploy gitlab template repo
+  template: src=gitlab_gitlab-ce.repo.j2 dest=/etc/yum.repos.d/gitlab_gitlab-ce.repo
+
+- name: install gitlab-ce
+  yum: name=gitlab-ce state=present disable_gpg_check=yes # the packages aren't signed, sigh
+
+- name: reconfigure gitlab
+  shell: gitlab-ctl reconfigure
+
+- name: show default credentials
+  debug: msg="credientials are root / 5iveL!fe"
